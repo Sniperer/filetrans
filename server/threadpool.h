@@ -18,8 +18,11 @@ enum thread_status{
 
 class thread_task{
     public:
+        thread_task(threadpool* _tp):tp(_tp){}
         virtual ~thread_task()=default;
         virtual int exec()=0;
+    private:
+        threadpool* tp;
 };
 
 class threadpool{
