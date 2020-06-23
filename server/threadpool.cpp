@@ -47,7 +47,7 @@ void* threadpool::thread_loop(void* argv){
         task_queue.pop();
         pthread_mutex_unlock(&task_mutex);
         exec_task->exec();
-    //    delete(exec_task);
+        delete(exec_task);
     }
     return NULL;            
 }

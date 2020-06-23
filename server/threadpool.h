@@ -11,18 +11,12 @@
 
 typedef void* func(void * argv);
 
+class thread_task;
+class threadpool;
+
 enum thread_status{
     THREAD_RUNNABLE=1,
     THREAD_STOPABLE
-};
-
-class thread_task{
-    public:
-        thread_task(threadpool* _tp):tp(_tp){}
-        virtual ~thread_task()=default;
-        virtual int exec()=0;
-    private:
-        threadpool* tp;
 };
 
 class threadpool{
@@ -45,5 +39,12 @@ class threadpool{
         static int set_thread_status(pthread_t tid,thread_status STAT);
 };
 
-#endif
+class thread_task{
+    public:
+        thread_task(threadpool* _tp):tp(_tp){}
+        virtual ~thread_task()=default;
+        virtual int exec()=0;
+        threadpool* tp;
+};
 
+#endif

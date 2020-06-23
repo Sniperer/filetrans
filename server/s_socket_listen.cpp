@@ -9,20 +9,31 @@ s_socket_listen::s_socket_listen(int port):server_port(port){
     bind(sockfd,(struct sockaddr*)&server_addr,sizeof(server_addr));
 }
 
-int s_socket_listen::exec_s_socket_listen(){
+int s_socket_listen::exec_s_socket_listen(threadpool* tp){
     listen(sockfd,5);
-    int c_sockfd;
+    //int c_sockfd;
     struct sockaddr_in cilent_addr;
     socklen_t addr_len;
-    addr_len=sizeof(client_addr);
+    addr_len=sizeof(cilent_addr);
     while(1){
         int c_sockfd=accept(sockfd,(struct sockaddr*)&cilent_addr,(socklen_t*)&addr_len);
-        s_socket_connect_task* new_connect_task=new s_socket_connect_task(c_sockfd,cilent_addr,addr_len);    
+#ifdef DEBUG
+        std::cout<<"socket accepted..."<<std::endl;
+#endif
+        s_socket_connect_task* new_connect_task=new s_socket_connect_task(tp,c_sockfd,cilent_addr,addr_len);    
         tp->add_task(new_connect_task);
     }
+    return 1;
+}
+
+s_socket_listen_task::s_socket_listen_task(threadpool *tp):thread_task(tp){
+    listen_proc=new s_socket_listen(8848);
 }
 
 int s_socket_listen_task::exec(){
-    listen_proc=new s_socket_listen(8848);
-    listen_proc->exec_s_socket_listen();    
+#ifdef DEBUG
+    std::cout<<"s_socket_listen_task running..."<<std::endl;
+#endif
+    listen_proc->exec_s_socket_listen(tp);
+    return 0;
 }
