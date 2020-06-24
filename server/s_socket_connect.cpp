@@ -18,7 +18,7 @@ static int str_from_ith_cmp(const char* str1,char* str2,int ith){
 static int str_to_int(char* str,int num){
     int len=0,ans=0;
     while(len<num){
-        ans=ans*10+(int)(*(str+len));
+        ans=ans*10+(int)(*(str+len)-'0');
         len++;
     }
     return ans;
@@ -50,17 +50,16 @@ s_socket_connect::~s_socket_connect(){
 /*
     FILETRANS/'\r\n\r\n'
     FILESIZE:$(len)'\r\n'
-    FILENAME:$(name)'\r\n'
+    FILENAME:$(name)'\r\n\r\n'
     '\r\n\r\n'
     $(filedata)
 */
 int s_socket_connect::s_solve_connect(){
     int recv_len=recv(c_sockfd,data_buf,4096,0);
 #ifdef DEBUG
-    for(int i=0;i<recv_len;i++){
-        std::cout<<data_buf[i];
-    }
-    std::cout<<std::endl;
+    std::cout<<"first recv file...file size is "<<recv_len<<std::endl;
+    std::cout<<data_buf<<std::endl;
+    std::cout<<"header debug end."<<std::endl;
 #endif
     int i=0,flag=0;
     bool have_head_bool=0,have_size_bool=0,have_name_bool=0;
@@ -69,13 +68,16 @@ int s_socket_connect::s_solve_connect(){
             if(data_buf[i+2]=='\r'&&data_buf[i+3]=='\n'){
                 if(have_head_bool==0&&str_from_ith_cmp("FILETRANS/",data_buf,flag)==0){
 #ifdef DEBUG
-    std::cout<<"FILETRANS/"<<std::endl;        
+    std::cout<<"FILETRANS head recieved..."<<std::endl;        
 #endif
                     i=i+4;
                     flag=i;
                     have_head_bool=1;
                 }
                 else if(have_head_bool==1&&have_size_bool==1&&have_name_bool==1&&str_from_ith_cmp("",data_buf,flag)==0){
+#ifdef DEBUG
+    std::cout<<"file data recving..."<<std::endl;
+#endif
                     i=i+4;
                     flag=i;
                     s_file->s_recv_file_size(recv_len-flag-1);                    
@@ -98,6 +100,26 @@ int s_socket_connect::s_solve_connect(){
                         }
 
                     }
+                }
+                else if(have_head_bool==1&&have_size_bool==1&&have_name_bool==0&&str_from_ith_cmp("FILENAME:",data_buf,flag)==0){
+#ifdef DEBUG
+    std::cout<<"file_name running..."<<std::endl;
+#endif
+                    flag=flag+9;
+                    char _name[256];
+                    int j;
+                    for(j=flag;j<i;j++){
+                        _name[j-flag]=data_buf[j];
+                    }
+                    _name[j-flag]='\0';
+                    std::string file_name(_name);
+#ifdef DEBUG                    
+    std::cout<<file_name<<std::endl;
+#endif                    
+                    s_file->s_recv_file_set_file_name(std::move(file_name));
+                    have_name_bool=1;
+                    i=i+4;
+                    flag=i;
                 }   
                 else{
                     /*
@@ -113,23 +135,6 @@ int s_socket_connect::s_solve_connect(){
     std::cout<<str_to_int(data_buf+flag,i-flag)<<std::endl;
 #endif
                     have_size_bool=1;
-                    i=i+2;
-                    flag=i;
-                }
-                else if(have_head_bool==1&&have_size_bool==1&&have_name_bool==0&&str_from_ith_cmp("FILENAME:",data_buf,flag)==0){
-                    flag=flag+9;
-                    char _name[256];
-                    int j;
-                    for(j=flag;j<i;j++){
-                        _name[j-flag]=data_buf[j];
-                    }
-                    _name[j-flag]='\0';
-                    std::string file_name(_name);
-#ifdef DEBUG                    
-    std::cout<<file_name<<std::endl;
-#endif                    
-                    s_file->s_recv_file_set_file_name(std::move(file_name));
-                    have_name_bool=1;
                     i=i+2;
                     flag=i;
                 }
