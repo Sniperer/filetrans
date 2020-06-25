@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++11 -g -Wall -pthread -D DEBUG
+CFLAGS = -std=c++11 -g -Wall -pthread
 
 s_filetrans:s_main.cpp threadpool.o s_recv_file.o s_socket_connect.o s_socket_listen.o
 	$(CC) $(CFLAGS) threadpool.o s_recv_file.o s_socket_connect.o s_socket_listen.o s_main.cpp -o s_filetrans
