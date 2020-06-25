@@ -2,6 +2,23 @@
 用来支持不同主机间文件互传。采用C/S模式，服务器端一般假设在linux中。
 <br>&emsp;&emsp;——致力为某电某无意义的b级测试提供解决方案；并缅怀我迟到10分钟的a级测试。
 
+## 编译和使用
+
+`服务端` <br>
+<pre>
+cd filetrans/server
+make clean&&make
+./s_filetrans
+</pre>
+
+
+`客户端for linux` <br>
+<pre>
+cd filetrans/cilent/linux
+make clean&&make
+./c_filetrans "file path in cilent" "excepted file name in server"
+</pre>
+
 ## 源代码组织架构
 
 ### ``filetrans/server`` <br>
@@ -17,6 +34,7 @@
 &emsp;待加入的特性： <br>
 &emsp;&emsp;1）threadpool中线程任务的优先级，并由此为不同的任务设计优先级，以进行调度。 <br>
 &emsp;&emsp;2) s_recv_file中按4096个字节分别装填进本机文件，需要在文件未读取完毕前，添加文件锁。<br>
+&emsp;&emsp;3) 改善硬编码的IP地址和服务端口。<br>
 
 ### ``filetrans/cilent/linux``<br>
 为linux客户端所设计的源代码文件夹。<br>
