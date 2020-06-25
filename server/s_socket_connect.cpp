@@ -2,6 +2,14 @@
 #include <cstring>
 //#define socklen_t int
 
+#ifdef DEBUG
+#define pr_data(str) printf("%s\n",str.c_str());
+#define pr_int(len) printf("%d\n",len);
+#else 
+#define pr_data(str) 
+#define pr_int(len) 
+#endif 
+
 static int str_from_ith_cmp(const char* str1,char* str2,int ith){
     int len=0;
     while(*(str1+len)!='\0'){
@@ -74,21 +82,24 @@ int s_socket_connect::s_solve_connect(){
                     flag=i;
                     have_head_bool=1;
                 }
-                else if(have_head_bool==1&&have_size_bool==1&&have_name_bool==1&&str_from_ith_cmp("",data_buf,flag)==0){
+                else if(have_head_bool==1&&have_size_bool==1&&have_name_bool==1){
 #ifdef DEBUG
     std::cout<<"file data recving..."<<std::endl;
 #endif
                     i=i+4;
                     flag=i;
-                    s_file->s_recv_file_size(recv_len-flag-1);                    
                     char _data[4096];
                     int j;
-                    for(j=flag;j<flag+s_file->s_recv_file_get_file_size();j++){
+                    for(j=flag;j<recv_len;j++){
                         _data[j-flag]=data_buf[j];    
                     }
-                    _data[j-flag]='\0';
+                    //_data[j-flag]='\0';
                     std::string str_data(_data);
+                    s_file->s_recv_file_size(str_data.size());                    
+                    //pr_data(str_data);
+                    //pr_int(str_data.size());
                     s_file->s_recv_file_set_file_data(std::move(str_data));
+                    pr_int(s_file->s_get_size_diff());
                     while(s_file->s_get_size_diff()>=0){
                         if(s_file->s_get_size_diff()==0){
                             return 0;
@@ -120,6 +131,9 @@ int s_socket_connect::s_solve_connect(){
                     have_name_bool=1;
                     i=i+4;
                     flag=i;
+#ifdef DEBUG
+    std::cout<<data_buf[i+4]<<std::endl;
+#endif
                 }   
                 else{
                     /*
@@ -137,6 +151,7 @@ int s_socket_connect::s_solve_connect(){
                     have_size_bool=1;
                     i=i+2;
                     flag=i;
+
                 }
                 else{
                     /*

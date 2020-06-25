@@ -2,8 +2,10 @@
 
 #ifdef DEBUG
 #define pr_data(str) printf("%s\n",str.c_str());
+#define pr_int(len) printf("%d\n",len);
 #else 
 #define pr_data(str) 
+#define pr_int(len) 
 #endif 
 
 void int_to_ith_chars(std::string& _buf,int num){
@@ -41,9 +43,11 @@ int c_socket_connect::exec_c_connect(){
     data_buf="\r\n\r\n";
     pr_data(data_buf);
     send(sockfd,data_buf.data(),data_buf.size(),0);
-    while(c_file->exec_c_send_file_data(data_buf,4096)){
+    int _len;
+    while(_len=c_file->exec_c_send_file_data(data_buf,4096)){
+        pr_int(_len);        
         pr_data(data_buf);
-        send(sockfd,data_buf.data(),data_buf.size(),0);
+        send(sockfd,data_buf.data(),_len,0);
     }
     return 0;
 //    send(sockfd,c_file->exec_c_send_file_size())

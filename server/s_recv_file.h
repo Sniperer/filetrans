@@ -4,12 +4,18 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-
-const std::string s_save_file_dir="~/filetrans_data";
+#include <dirent.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
 
 class s_recv_file{
     public:
-        s_recv_file()=default;
+        s_recv_file();
         ~s_recv_file()=default;
         void s_recv_file_set_file_name(std::string &&_name);
         void s_recv_file_set_file_data(std::string &&_data);
@@ -19,6 +25,7 @@ class s_recv_file{
         int  s_get_size_diff();
         void s_mk_file();
     private:
+        std::string s_save_file_dir;
         std::string file_name;
         std::string file_data;
         size_t file_size;

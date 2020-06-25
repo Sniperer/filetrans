@@ -10,8 +10,8 @@ int min(int a,int b){
     return a<b?a:b;
 }
 
-c_send_file::c_send_file(std::string _path):file_name(_path){
-    fs.open(file_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);
+c_send_file::c_send_file(std::string _path,std::string _name):path_name(_path),file_name(_name){
+    fs.open(path_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);
 }
 
 c_send_file::~c_send_file(){
