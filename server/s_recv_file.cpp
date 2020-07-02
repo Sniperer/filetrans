@@ -60,7 +60,6 @@ void s_recv_file::s_mk_file(){
         fs.open(file_full_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);
     }
     fs<<file_data;
-    fflush(fs);
     //file_data="";
     fs.close();
 }

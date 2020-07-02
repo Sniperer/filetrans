@@ -16,7 +16,7 @@ make clean&&make
 <pre>
 cd filetrans/cilent/linux
 make clean&&make
-./c_filetrans "file path in cilent" "excepted file name in server"
+./c_filetrans
 </pre>
 
 ## 源代码组织架构
@@ -35,6 +35,9 @@ make clean&&make
 &emsp;&emsp;1）threadpool中线程任务的优先级，并由此为不同的任务设计优先级，以进行调度。 <br>
 &emsp;&emsp;2) s_recv_file中按4096个字节分别装填进本机文件，需要在文件未读取完毕前，添加文件锁。<br>
 &emsp;&emsp;3) 改善硬编码的IP地址和服务端口。<br>
+
+`服务端版本：1.0 for b-test` <br>
+&emsp;特性
 
 ### ``filetrans/cilent/linux``<br>
 为linux客户端所设计的源代码文件夹。<br>
