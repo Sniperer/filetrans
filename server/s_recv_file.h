@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 class s_recv_file{
     public:

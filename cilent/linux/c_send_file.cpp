@@ -11,6 +11,9 @@ int min(int a,int b){
 }
 
 c_send_file::c_send_file(std::string _path,std::string _name):path_name(_path),file_name(_name){
+#ifdef DEBUG
+    std::cout<<path_name<<" "<<file_name<<std::endl;
+#endif
     fs.open(path_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);
 }
 

@@ -41,7 +41,7 @@ int s_socket_connect_task::exec(){
 #ifdef DEBUG
     std::cout<<"s_socket_connect_task running..."<<std::endl;
 #endif
-    connect_proc->s_solve_connect();
+    connect_proc->s_solve_login();
     return 0;
 }
 
@@ -165,4 +165,135 @@ int s_socket_connect::s_solve_connect(){
         }    
     }
     return 1;
+}
+
+/*
+    FILETRANS/login'\r\n\r\n'
+    USERNAME:$(user)'\r\n'
+    PASSWORD:&(name)'\r\n\r\n'
+*/
+int s_socket_connect::s_solve_login(){
+    char _username[256];
+    char _password[256];
+    int recv_len=recv(c_sockfd,data_buf,4096,0);
+#ifdef DEBUG
+    std::cout<<data_buf<<std::endl;
+#endif
+    int i=0,flag=0;
+    bool have_head_bool=0,have_username_bool=0,have_password_bool=0;
+    while(i<recv_len){
+        if(data_buf[i]=='\r'&&data_buf[i+1]=='\n'){
+            if(data_buf[i+2]=='\r'&&data_buf[i+3]=='\n'){
+                if(have_head_bool==0&&str_from_ith_cmp("FILETRANS/login",data_buf,flag)==0){
+#ifdef DEBUG
+    std::cout<<"have head."<<std::endl;
+#endif
+                    i=i+4;
+                    flag=i;
+                    have_head_bool=1;
+                }
+                else if(have_head_bool==1&&have_username_bool==1&&have_password_bool==0&&str_from_ith_cmp("PASSWORD:",data_buf,flag)==0){
+                    flag=flag+9;
+
+                //    char _password[256];
+                    int j;
+                    for(j=flag;j<i;j++){
+                        _password[j-flag]=data_buf[j];
+                    }
+                    _password[j-flag]='\0';
+#ifdef DEBUG
+    std::cout<<_password<<std::endl;
+#endif
+                    i=i+4;
+                    flag=i;
+                    have_password_bool=1;
+                }
+            }
+            else{
+                if(have_head_bool==1&&have_username_bool==0&&str_from_ith_cmp("USERNAME:",data_buf,flag)==0){
+                    flag=flag+9;
+                    std::cout<<"???"<<std::endl;
+                    int j;
+                    for(j=flag;j<i;j++){
+                        _username[j-flag]=data_buf[j];
+                    }
+                    _username[j-flag]='\0';
+#ifdef DEBUG
+    std::cout<<_username<<std::endl;
+#endif
+                    i=i+2;
+                    flag=i;
+                    have_username_bool=1;
+                }
+            }
+        }
+        else i++;
+    }
+    std::fstream fs2;
+    fs2.open("fileserver.conf",std::ios::in|std::ios::out);
+    if(!fs2.is_open()){
+#ifdef DEBUG
+    std::cout<<"file not exist."<<std::endl;
+#endif
+        return 1;
+    }
+    std::string cfg_buf(256,'\0');
+    std::string username(256,'\0'),password(256,'\0');
+    while(fs2.getline(&cfg_buf[0],256)){
+        if(str_from_ith_cmp("username",&cfg_buf[0],0)==0){
+            int i=9;
+            while(cfg_buf[i]!='\0'){
+                username[i-9]=cfg_buf[i];   
+                i++;     
+            }
+            username.resize(i-9);
+        }
+        else if(str_from_ith_cmp("password",&cfg_buf[0],0)==0){
+            int i=9;
+            while(cfg_buf[i]!='\0'){
+                password[i-9]=cfg_buf[i];
+                i++;
+            }
+            password.resize(i-9);
+        }
+    }
+#ifdef DEBUG
+    std::cout<<password<<":"<<_username<<" "<<username<<":"<<_password<<std::endl;
+#endif
+    fs2.close();
+    if(username==_username && password==_password){
+#ifdef DEBUG
+    std::cout<<"success"<<std::endl;
+#endif
+        s_send_suclogin();
+        s_solve_connect();
+    }
+    else{
+#ifdef DEBUG
+    std::cout<<"error"<<std::endl;
+#endif
+        s_send_errlogin();
+        close(c_sockfd);
+        return 1;          
+    }
+    close(c_sockfd);
+    return 0;
+}
+
+/*
+    ERROR\r\n
+*/
+void s_socket_connect::s_send_errlogin(){
+    std::string err_login="ERROR";
+    err_login+="\r\n\r\n";
+    send(c_sockfd,err_login.data(),err_login.size(),0);
+}
+
+/*
+    SUCCESS\r\n
+*/
+void s_socket_connect::s_send_suclogin(){
+    std::string suc_login="SUCCESS";
+    suc_login+="\r\n\r\n";
+    send(c_sockfd,suc_login.data(),suc_login.size(),0);
 }

@@ -5,8 +5,14 @@
 #include "s_recv_file.h"
 #include <netinet/in.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <cstring>
 
 //const char[] s_save_file_dir="~/filetrans_data";
 
@@ -31,6 +37,9 @@ class s_socket_connect{
     public:
         s_socket_connect(int _fd,struct sockaddr_in _addr,socklen_t _addr_len);
         ~s_socket_connect();
+        int s_solve_login();
+        void s_send_errlogin();
+        void s_send_suclogin();
         int s_solve_connect();
         s_recv_file* s_file;
     private:
