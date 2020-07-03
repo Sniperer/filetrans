@@ -30,18 +30,30 @@ void int_to_ith_chars(std::string& _buf,int num){
     reverse(tmp.begin(),tmp.end());
     _buf+=tmp;
 }
-c_socket_connect::c_socket_connect(std::string ipaddr,int port,c_send_file* _file,std::string username,std::string password)
-    :c_file(_file),username(username),password(password){
+//c_socket_connect::c_socket_connect(std::string ipaddr,int port,c_send_file* _file,std::string username,std::string password)
+//    :c_file(_file),username(username),password(password){
+//    sockfd=socket(AF_INET,SOCK_STREAM,0);
+//    memset(&cilent_addr,0,sizeof(cilent_addr));
+//    cilent_addr.sin_family=AF_INET;
+//    cilent_addr.sin_port=htons(port);
+//    cilent_addr.sin_addr.s_addr=inet_addr(ipaddr.data());
+//}
+
+c_socket_connect::c_socket_connect(std::string ipaddr,int port,std::string username,std::string password)
+    :username(username),password(password){
     sockfd=socket(AF_INET,SOCK_STREAM,0);
     memset(&cilent_addr,0,sizeof(cilent_addr));
     cilent_addr.sin_family=AF_INET;
     cilent_addr.sin_port=htons(port);
     cilent_addr.sin_addr.s_addr=inet_addr(ipaddr.data());
+    connect(sockfd,(struct sockaddr*)&cilent_addr,sizeof(cilent_addr));
 }
 
-int c_socket_connect::exec_c_connect(){
-    connect(sockfd,(struct sockaddr*)&cilent_addr,sizeof(cilent_addr));
-    if(log_c_connect()==0) return 2;
+int c_socket_connect::exec_c_connect(c_send_file* _file){
+    
+//    connect(sockfd,(struct sockaddr*)&cilent_addr,sizeof(cilent_addr));
+//    if(log_c_connect()==0) return 2;
+    c_file=_file;
     data_buf="FILETRANS/\r\n\r\n";
     pr_data(data_buf);
     send(sockfd,data_buf.data(),data_buf.size(),0);
@@ -85,6 +97,7 @@ int c_socket_connect::log_c_connect(){
     while(i<recv_len){
         if(recv_buf[i]=='\r'&&recv_buf[i+1]=='\n'&&recv_buf[i+2]=='\r'&&recv_buf[i+3]=='\n'){
             if(str_from_ith_cmp("SUCCESS",recv_buf,flag)==0){
+                close(sockfd);
                 return 1;
             }
             else{
@@ -93,5 +106,10 @@ int c_socket_connect::log_c_connect(){
         }
         else i++;
     }
-    return 1;
+    close(sockfd);
+    return 0;
+}
+
+void c_socket_connect::set_c_func(int _op){
+    op=_op;
 }
