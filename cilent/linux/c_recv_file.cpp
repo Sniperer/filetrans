@@ -6,13 +6,13 @@
 #define pr_data(str)
 #endif
 
-c_recv_file::c_recv_file(){
+c_recv_file::c_recv_file(std::string &&_fname):s_file_name(_fname){
     extern int errno;
     char *path=getenv("HOME");
-    printf("path=%s\n",path);
+    //printf("path=%s\n",path);
     c_save_file_dir=path;
     c_save_file_dir+="/filetrans_data_c";
-    if(!opendir(c_save_file_dir.c_str())==NULL&&errno==2){
+    if(opendir(c_save_file_dir.c_str())==NULL&&errno==2){
         if(mkdir(c_save_file_dir.c_str(),S_IRUSR|S_IWUSR|S_IXUSR)<0){
             std::cout<<"some error!"<<std::endl;
         }
@@ -46,8 +46,8 @@ void c_recv_file::c_recv_file_size(size_t _size){
 
 void c_recv_file::c_mk_file(){
     std::string file_full_name=c_save_file_dir+"/"+file_name;
-    pr_data(file_full_name);
-    pr_data(file_data);
+    //pr_data(file_full_name);
+    //pr_data(file_data);
     std::fstream fs;
     fs.open(file_full_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);
     if(!fs.is_open()){
@@ -69,4 +69,8 @@ int c_recv_file::c_get_size_diff(){
 
 int c_recv_file::c_recv_file_get_file_size(){
     return recv_file_size;
+}
+
+std::string c_recv_file::c_recv_file_get_s_file_name(){
+    return (s_file_name);
 }

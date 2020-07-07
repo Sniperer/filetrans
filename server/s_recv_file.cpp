@@ -45,8 +45,8 @@ void s_recv_file::s_recv_file_size(size_t _size){
 
 void s_recv_file::s_mk_file(){
     std::string file_full_name=s_save_file_dir+"/"+file_name;
-    pr_data(file_full_name);
-    pr_data(file_data);
+    //pr_data(file_full_name);
+    //pr_data(file_data);
     //recv_file_size+=file_data.size();
     std::fstream fs;
     fs.open(file_full_name,std::ios::in|std::ios::out|std::ios::binary|std::ios::ate);

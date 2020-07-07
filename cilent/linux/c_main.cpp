@@ -20,51 +20,39 @@ int main(int argc,char* argv[]){
         if(c_con->log_c_connect()) break;
         std::cout<<">wrong username OR password.\n";
     }
-    std::cout<<">input function[1/2/3](upload file/download file/show files):";
-    std::cin>>op;
-    c_con->set_c_func(op);
-    if(op==1){
-        /*upload file*/
-        std::cout<<">input cilent filepath:";
-        std::cin>>srcpath;
-        std::cout<<">input server filename:";
-        std::cin>>dstpath;
-        c_send_file *fd=new c_send_file(srcpath,dstpath);
-        c_con->exec_c_connect(fd);
-    }
-    else if(op==2){
-        /*download file*/
-        std::cout<<">input server filepath:";
-        std::cin>>srcpath;
-        std::cout<<">input cilent filename:";
-        std::cin>>dstpath;
-        
-    }
-    else if(op==3){
-        /*show files*/
-
-    }
-    c_socket_connect *c_con=new c_socket_connect(ip_addr,8848,fd,username,password);
-    if(c_con->exec_c_connect()==2){
-        std::cout<<">wrong username OR password. program exit."<<std::endl;
-        return 0;
-    }
-
-/*    
-    if(argc==1||argc%2==0){
-        std::cout<<"please input file path."<<std::endl;
-        return 0;
-    }
-    else{
-    //    c_socket_connect c_con(8848);
-        for(int i=1;i<argc;i=i+2){
-            std::cout<<"file path:";
-            std::cout<<argv[i]<<argv[i+1]<<std::endl;
-            c_send_file *fd=new c_send_file(argv[i],argv[i+1]);
-            c_socket_connect *c_con=new c_socket_connect(ip_addr,8848,fd);
+    while(1){
+        std::cout<<">input function[1/2/3/4](upload file/download file/show files):";
+        std::cin>>op;
+        if(op==1){
+            /*upload file*/
+            std::cout<<">input cilent filepath:";
+            std::cin>>srcpath;
+            std::cout<<">input server filename:";
+            std::cin>>dstpath;
+            c_send_file *fd=new c_send_file(srcpath,dstpath);
+            c_con->exec_c_connect(fd);
+        }
+        else if(op==2){
+            /*download file*/
+            std::cout<<">input server filepath:";
+            std::cin>>srcpath;
+            std::cout<<">input cilent filename:";
+            std::cin>>dstpath;
+            c_recv_file *fd=new c_recv_file(std::move(srcpath));
+            fd->c_recv_file_set_file_name(std::move(dstpath));
+            c_con->exec_c_connect(fd);
+        }
+        else if(op==3){
+            /*show files*/
+            std::cout<<"show files:\n"<<std::endl;
             c_con->exec_c_connect();
         }
+        else if(op==4){
+            return 0;
+        }
+        else{
+            std::cout<<"?"<<std::endl;
+        }
     }
-*/
     return 0;
 }

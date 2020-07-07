@@ -32,6 +32,7 @@ int c_send_file::exec_c_send_file_size(){
 #endif
         return 1;
     }
+    fs.seekg(0,std::ios::end);
     file_size=fs.tellg();
 #ifdef DEBUG1
     std::cout<<"[c_send_file]file_size:"<<file_size<<std::endl;
@@ -42,7 +43,7 @@ int c_send_file::exec_c_send_file_size(){
 
 int c_send_file::exec_c_send_file_data(std::string& _data,size_t len){
     int ans=min(len,file_size-send_file_size);
-    //_data[ans]='\0';
+    _data.resize(ans);
     fs.read(&_data[0],ans);
     //pr_data(_data);
     send_file_size+=ans;
