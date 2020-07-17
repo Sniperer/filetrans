@@ -4,6 +4,8 @@
 
 ## 编译和使用
 
+建议关闭-D DEBUG，编写的debug宏可能会引起一些意料之外的错误。
+
 `服务端` <br>
 <pre>
 cd filetrans/server

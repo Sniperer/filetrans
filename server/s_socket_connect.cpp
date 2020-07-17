@@ -219,7 +219,7 @@ int s_socket_connect::s_solve_login(){
                         _password[j-flag]=data_buf[j];
                     }
                     _password[j-flag]='\0';
-#ifdef DEBUG
+#ifdef DEBUG1
     std::cout<<_password<<std::endl;
 #endif
                     i=i+4;
@@ -236,7 +236,7 @@ int s_socket_connect::s_solve_login(){
                         _username[j-flag]=data_buf[j];
                     }
                     _username[j-flag]='\0';
-#ifdef DEBUG
+#ifdef DEBUG1
     std::cout<<_username<<std::endl;
 #endif
                     i=i+2;

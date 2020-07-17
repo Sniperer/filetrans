@@ -106,12 +106,10 @@ int c_socket_connect::exec_c_connect(c_send_file* _file){
 */
 int c_socket_connect::log_c_connect(){
     data_buf="FILETRANS/login\r\n\r\n";
-    send(sockfd,data_buf.data(),data_buf.size(),0);
-    data_buf="USERNAME:";
+    data_buf+="USERNAME:";
     data_buf+=username;
     data_buf+="\r\n";
-    send(sockfd,data_buf.data(),data_buf.size(),0);
-    data_buf="PASSWORD:";
+    data_buf+="PASSWORD:";
     data_buf+=password;
     data_buf+="\r\n\r\n";
     send(sockfd,data_buf.data(),data_buf.size(),0);
